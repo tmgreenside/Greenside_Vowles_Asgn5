@@ -114,6 +114,22 @@ std::shared_ptr<ASTReadExpression> Parser::input() {
     ContextLog clog("input", currentLexeme);
     auto ans = std::make_shared<ASTReadExpression>();
     // TODO
+    
+    if (currentLexeme.token == Token::READINT){
+        eat(Token::READINT, "Expected READINT");
+        eat(Token::LPAREN, "Expected '('");
+        eat(Token::STRING, "Expected string");
+        eat(Token::RPAREN, "Expected ')'");
+    }
+    else if (currentLexeme.token == Token::READSTR){
+        eat(Token::READSTR, "Expected READSTR");
+        eat(Token::LPAREN, "Expected '('");
+        eat(Token::STRING, "Expected string");
+        eat(Token::RPAREN, "Expected ')'");
+    }
+    else{
+        eat(Token::READINT, "Expected READINT or READSTR");
+    }
     return ans;
 }
 
@@ -121,6 +137,13 @@ std::shared_ptr<ASTAssignmentStatement> Parser::assign() {
     ContextLog clog("assign", currentLexeme);
     auto ans = make_shared<ASTAssignmentStatement>();
     // TODO
+    
+    eat(Token::ID, "Expected identifier");
+    listindex(); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LEFT OFF HERE
+    eat(Token::ASSIGN, "Expected '='");
+    expr();
+    eat(Token::SEMICOLON, "Expected ';'");
+    
     return ans;
 }
 
