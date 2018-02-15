@@ -150,6 +150,12 @@ std::shared_ptr<ASTAssignmentStatement> Parser::assign() {
 std::shared_ptr<ASTExpression> Parser::listindex() {
     ContextLog clog("listindex", currentLexeme);
     // TODO
+    
+    if (currentLexeme.token == Token::LBRACKET) {
+        advance();
+        expr();
+        eat(Token::RBRACKET, "Expected ']'");
+    }
     return nullptr;
 }
 
