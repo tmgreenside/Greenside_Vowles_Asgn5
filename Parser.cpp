@@ -116,6 +116,7 @@ std::shared_ptr<ASTReadExpression> Parser::input() {
     // TODO
     
     if (currentLexeme.token == Token::READINT){
+        ans->isReadInt = true;
         eat(Token::READINT, "Expected READINT");
         eat(Token::LPAREN, "Expected '('");
         eat(Token::STRING, "Expected string");
@@ -141,7 +142,7 @@ std::shared_ptr<ASTAssignmentStatement> Parser::assign() {
     eat(Token::ID, "Expected identifier");
     listindex(); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LEFT OFF HERE
     eat(Token::ASSIGN, "Expected '='");
-    expr();
+    ans->rhs = expr();
     eat(Token::SEMICOLON, "Expected ';'");
     
     return ans;
@@ -152,9 +153,11 @@ std::shared_ptr<ASTExpression> Parser::listindex() {
     // TODO
     
     if (currentLexeme.token == Token::LBRACKET) {
+        auto ans = make_shared<ASTExpression>();
         advance();
-        expr();
+        ans = expr();
         eat(Token::RBRACKET, "Expected ']'");
+        return ans;
     }
     return nullptr;
 }
@@ -162,11 +165,50 @@ std::shared_ptr<ASTExpression> Parser::listindex() {
 std::shared_ptr<ASTExpression> Parser::expr() {
     ContextLog clog("expr", currentLexeme);
     // TODO
+    
+    auto ans = make_shared<ASTComplexExpression>();
+    ans->firstOperand = value(); // value() returns an ASTExpression ptr.
+    exprt(ans); // returns an ASTComplexExpression ptr.
+
     return nullptr;
 }
+
 void Parser::exprt(std::shared_ptr<ASTComplexExpression> expression) {
     ContextLog clog("exprt", currentLexeme);
     // TODO
+    
+    switch(currentLexeme.token) {
+        case Token::PLUS:
+        case Token::MINUS:
+        case Token::DIVIDE:
+        case Token::MULTIPLY:
+        case Token::MODULUS:
+            expression->operation = currentLexeme.token;
+            mathRel();
+            expression->rest = expr();
+            break;
+        default:
+            // may be empty
+            break;
+    }
+}
+
+//advances if the next token is PLUS,MINUS,DIVIDE,MULTIPLY,or MODULUS
+//otherwise error, so an error message will be displayed
+void Parser::mathRel() {
+    ContextLog clog("math_rel", currentLexeme);
+    switch(currentLexeme.token) {
+        case Token::PLUS:
+        case Token::MINUS:
+        case Token::DIVIDE:
+        case Token::MULTIPLY:
+        case Token::MODULUS:
+            advance();
+        default:
+            // No math operator found, throw error
+            eat(Token::PLUS, "Expected '+' or '-' or '*' or '/' or '%'");
+            break;
+    }
 }
 
 bool isTokenAValue(Token token) {
@@ -191,6 +233,8 @@ std::shared_ptr<ASTExpression> Parser::value() {
         case Token::ID:
         {
             // TODO
+            advance();
+            listindex();
             return nullptr;
             break;
         }
@@ -207,6 +251,8 @@ std::shared_ptr<ASTExpression> Parser::value() {
         {
             auto ans = make_shared<ASTLiteral>();
             // TODO
+            ans->type = MPLType::INT;
+            ans->value = currentLexeme.text;
             return ans;
             break;
         }

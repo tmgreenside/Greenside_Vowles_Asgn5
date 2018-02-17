@@ -34,6 +34,9 @@ private:
     
     std::shared_ptr<ASTExpression> expr();
     void exprt(std::shared_ptr<ASTComplexExpression> expression);
+    
+    void mathRel();
+    
     std::shared_ptr<ASTExpression> value();
     std::shared_ptr<ASTListLiteral> exprlist();
     void exprtail(std::shared_ptr<ASTListLiteral> list);
