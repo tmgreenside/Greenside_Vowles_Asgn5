@@ -141,10 +141,9 @@ std::shared_ptr<ASTAssignmentStatement> Parser::assign() {
     auto ans = make_shared<ASTAssignmentStatement>();
     // TODO !!!!!!!!!!!!! unfinished
     
-    eat(Token::ID, "Expected identifier");
-    listindex();
+    ans->identifier = value();
     eat(Token::ASSIGN, "Expected '='");
-    ans->rhs = expr();
+    ans->rhs = listindex();
     eat(Token::SEMICOLON, "Expected ';'");
     
     return ans;
@@ -346,6 +345,14 @@ void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
 std::shared_ptr<ASTBoolExpression> Parser::bexpr() {
     ContextLog clog("bexpr", currentLexeme);
     // TODO
+    
+    switch(currentLexeme.token) {
+        case Token::NOT:
+            
+            break;
+        default:
+            return nullptr;
+    }
     return nullptr;
 }
 
@@ -374,6 +381,7 @@ void Parser::bconnect(std::shared_ptr<ASTComplexBoolExpression> expression) {
     
     if (currentLexeme.token == Token::AND){
         expression->hasConjunction = true;
+        expression->conjunction = currentLexeme.token;
         advance();
         bexpr();
     } else if (currentLexeme.token == Token::OR){
