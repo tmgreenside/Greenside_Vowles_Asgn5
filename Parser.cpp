@@ -233,9 +233,11 @@ std::shared_ptr<ASTExpression> Parser::value() {
         case Token::ID:
         {
             // TODO
+            auto ans = make_shared<ASTIdentifier>();
+            ans->name = currentLexeme.text;
             advance();
-            listindex();
-            return nullptr;
+            ans->indexExpression = listindex();
+            return ans;
             break;
         }
         case Token::STRING:
@@ -257,6 +259,14 @@ std::shared_ptr<ASTExpression> Parser::value() {
             break;
         }
         // TODO
+        case Token::BOOL:
+        {
+            auto ans = make_shared<ASTLiteral>();
+            ans->type = MPLType::BOOL;
+            ans->value = currentLexeme.text;
+            return ans;
+            break;
+        }
         default:
             error("Expected a value");
     }
