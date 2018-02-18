@@ -170,7 +170,7 @@ std::shared_ptr<ASTExpression> Parser::expr() {
     auto ans = make_shared<ASTComplexExpression>();
     ans->firstOperand = value(); // value() returns an ASTExpression ptr.
     exprt(ans); // returns an ASTComplexExpression ptr.
-
+    
     return nullptr;
 }
 
@@ -312,6 +312,7 @@ std::shared_ptr<ASTListLiteral> Parser::exprlist() {
     
     return ans;
 }
+
 void Parser::exprtail(std::shared_ptr<ASTListLiteral> list) {
     ContextLog clog("exprtail", currentLexeme);
     // TODO
@@ -340,19 +341,49 @@ std::shared_ptr<ASTIfStatement> Parser::cond() {
 void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
     ContextLog clog("condt", currentLexeme);
     // TODO
+    
+    switch (currentLexeme.token) {
+        case Token::ELSEIF:
+            eat(Token::ELSEIF, "Expected elseif");
+            statement->baseIf.expression = bexpr();
+            eat(Token::THEN, "Expected then");
+            statement->elseList = stmts(statement->baseIf.statementList); //takes in ASTStamentList, returns ASTStamentList
+            condt(statement->elseList);
+            break;
+        case Token::ELSE:
+            eat(Token::ELSE, "Expected else");
+            statement->elseList = stmts(statement->baseIf.statementList); //takes in ASTStamentList, returns ASTStamentList
+            break;
+        default:
+            // May be empty
+            break;
+    }
 }
 
 std::shared_ptr<ASTBoolExpression> Parser::bexpr() {
     ContextLog clog("bexpr", currentLexeme);
     // TODO
+    auto ans = make_shared<ASTComplexBoolExpression>();
     
-    switch(currentLexeme.token) {
+    switch (currentLexeme.token) {
         case Token::NOT:
-            
+            eat(Token::NOT, "Expected 'not'");
+        case Token::ID:                            //******************* Added to
+        case Token::STRING:
+        case Token::INT:
+        case Token::BOOL:
+        case Token::READINT:
+        case Token::READSTR:
+        case Token::LBRACKET:
+        case Token::RBRACKET:
+            ans->first = expr();// returns ASTExpression
+            bexprt(ans);//takes in ASTComplexBoolExpression as param
             break;
         default:
-            return nullptr;
+            // May be empty
+            break;
     }
+    
     return nullptr;
 }
 
@@ -381,12 +412,10 @@ void Parser::bconnect(std::shared_ptr<ASTComplexBoolExpression> expression) {
     
     if (currentLexeme.token == Token::AND){
         expression->hasConjunction = true;
-        expression->conjunction = currentLexeme.token;
         advance();
-        bexpr();
+        expression-> remainder = bexpr(); //return ASTBoolExpression
     } else if (currentLexeme.token == Token::OR){
-        
-        bexpr();
+        expression-> remainder = bexpr();
     }
 }
 
