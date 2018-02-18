@@ -119,12 +119,14 @@ std::shared_ptr<ASTReadExpression> Parser::input() {
         ans->isReadInt = true;
         eat(Token::READINT, "Expected READINT");
         eat(Token::LPAREN, "Expected '('");
+        ans->message = currentLexeme.text;
         eat(Token::STRING, "Expected string");
         eat(Token::RPAREN, "Expected ')'");
     }
     else if (currentLexeme.token == Token::READSTR){
         eat(Token::READSTR, "Expected READSTR");
         eat(Token::LPAREN, "Expected '('");
+        ans->message = currentLexeme.text;
         eat(Token::STRING, "Expected string");
         eat(Token::RPAREN, "Expected ')'");
     }
@@ -267,6 +269,20 @@ std::shared_ptr<ASTExpression> Parser::value() {
             return ans;
             break;
         }
+        case Token::READINT:
+        case Token::READSTR:
+        {
+            return input();
+            break;
+        }
+        case Token::LBRACKET:
+        {
+            advance();
+            auto ans = exprlist();
+            eat(Token::RBRACKET, "Expected ']'");
+            return ans;
+            break;
+        }
         default:
             error("Expected a value");
     }
@@ -323,6 +339,14 @@ void Parser::bexprt(std::shared_ptr<ASTComplexBoolExpression> expression) {
 void Parser::bconnect(std::shared_ptr<ASTComplexBoolExpression> expression) {
     ContextLog clog("bconnect", currentLexeme);
     // TODO
+    if (currentLexeme.token == Token::AND){
+        expression->hasConjunction = true;
+        advance();
+        bexpr();
+    } else if (currentLexeme.token == Token::OR){
+        
+        bexpr();
+    }
 }
 
 std::shared_ptr<ASTWhileStatement> Parser::loop() {
