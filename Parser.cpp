@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include "Parser.h"
 
 #include <iostream>
@@ -140,10 +139,10 @@ std::shared_ptr<ASTReadExpression> Parser::input() {
 std::shared_ptr<ASTAssignmentStatement> Parser::assign() {
     ContextLog clog("assign", currentLexeme);
     auto ans = make_shared<ASTAssignmentStatement>();
-    // TODO
+    // TODO !!!!!!!!!!!!! unfinished
     
     eat(Token::ID, "Expected identifier");
-    listindex(); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LEFT OFF HERE
+    listindex();
     eat(Token::ASSIGN, "Expected '='");
     ans->rhs = expr();
     eat(Token::SEMICOLON, "Expected ';'");
@@ -371,7 +370,8 @@ void Parser::bexprt(std::shared_ptr<ASTComplexBoolExpression> expression) {
 
 void Parser::bconnect(std::shared_ptr<ASTComplexBoolExpression> expression) {
     ContextLog clog("bconnect", currentLexeme);
-    // TODO
+    // TODO !!!!!!!!!!! unfinished
+    
     if (currentLexeme.token == Token::AND){
         expression->hasConjunction = true;
         advance();
@@ -385,6 +385,12 @@ void Parser::bconnect(std::shared_ptr<ASTComplexBoolExpression> expression) {
 std::shared_ptr<ASTWhileStatement> Parser::loop() {
     ContextLog clog("loop", currentLexeme);
     auto ans = make_shared<ASTWhileStatement>();
+
     // TODO
+    eat(Token::WHILE, "Expected 'while'");
+    ans->condition = bexpr();
+    eat(Token::DO, "Expected 'do'");
+    ans->statements = stmts();
+    eat(Token::END, "Expected 'end'");
     return ans;
 }
