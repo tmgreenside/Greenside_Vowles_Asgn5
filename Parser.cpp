@@ -1,3 +1,4 @@
+
 #include "Parser.h"
 
 #include <iostream>
@@ -114,7 +115,7 @@ std::shared_ptr<ASTReadExpression> Parser::input() {
     ContextLog clog("input", currentLexeme);
     auto ans = std::make_shared<ASTReadExpression>();
     // TODO
-    
+
     if (currentLexeme.token == Token::READINT){
         ans->isReadInt = true;
         eat(Token::READINT, "Expected READINT");
@@ -138,20 +139,20 @@ std::shared_ptr<ASTAssignmentStatement> Parser::assign() {
     ContextLog clog("assign", currentLexeme);
     auto ans = make_shared<ASTAssignmentStatement>();
     // TODO
-    
+
     eat(Token::ID, "Expected identifier");
     listindex(); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LEFT OFF HERE
     eat(Token::ASSIGN, "Expected '='");
     ans->rhs = expr();
     eat(Token::SEMICOLON, "Expected ';'");
-    
+
     return ans;
 }
 
 std::shared_ptr<ASTExpression> Parser::listindex() {
     ContextLog clog("listindex", currentLexeme);
     // TODO
-    
+
     if (currentLexeme.token == Token::LBRACKET) {
         auto ans = make_shared<ASTExpression>();
         advance();
@@ -165,7 +166,7 @@ std::shared_ptr<ASTExpression> Parser::listindex() {
 std::shared_ptr<ASTExpression> Parser::expr() {
     ContextLog clog("expr", currentLexeme);
     // TODO
-    
+
     auto ans = make_shared<ASTComplexExpression>();
     ans->firstOperand = value(); // value() returns an ASTExpression ptr.
     exprt(ans); // returns an ASTComplexExpression ptr.
@@ -176,7 +177,7 @@ std::shared_ptr<ASTExpression> Parser::expr() {
 void Parser::exprt(std::shared_ptr<ASTComplexExpression> expression) {
     ContextLog clog("exprt", currentLexeme);
     // TODO
-    
+
     switch(currentLexeme.token) {
         case Token::PLUS:
         case Token::MINUS:
@@ -233,11 +234,9 @@ std::shared_ptr<ASTExpression> Parser::value() {
         case Token::ID:
         {
             // TODO
-            auto ans = make_shared<ASTIdentifier>();
-            ans->name = currentLexeme.text;
             advance();
-            ans->indexExpression = listindex();
-            return ans;
+            listindex();
+            return nullptr;
             break;
         }
         case Token::STRING:
@@ -259,14 +258,6 @@ std::shared_ptr<ASTExpression> Parser::value() {
             break;
         }
         // TODO
-        case Token::BOOL:
-        {
-            auto ans = make_shared<ASTLiteral>();
-            ans->type = MPLType::BOOL;
-            ans->value = currentLexeme.text;
-            return ans;
-            break;
-        }
         default:
             error("Expected a value");
     }
@@ -276,17 +267,49 @@ std::shared_ptr<ASTListLiteral> Parser::exprlist() {
     ContextLog clog("exprlist", currentLexeme);
     auto ans = make_shared<ASTListLiteral>();
     // TODO
+
+    switch (currentLexeme.token) {
+        case Token::ID:
+        case Token::STRING:
+        case Token::INT:
+        case Token::BOOL:
+        case Token::READINT:
+        case Token::READSTR:
+        case Token::LBRACKET:
+        case Token::RBRACKET:
+            ans->expression = expr(); //expression = type ASTExpression
+            exprtail(ans); //returns void, takes in ASTExpression
+            return ans;
+            break;
+        default:
+            // May be empty
+            break;
+    }
+
     return ans;
 }
 void Parser::exprtail(std::shared_ptr<ASTListLiteral> list) {
     ContextLog clog("exprtail", currentLexeme);
     // TODO
+    if (currentLexeme.token == Token::COMMA) {
+        advance();
+        list->expressions = expr();//returns type ASTExpression
+        exprtail(list); //takes type ASTListLiteral as a parameter
+    }
 }
 
 std::shared_ptr<ASTIfStatement> Parser::cond() {
     ContextLog clog("cond", currentLexeme);
     auto ans = make_shared<ASTIfStatement>();
     // TODO
+
+    eat(Token::IF, "Expected 'if'");
+    ans->baseIf->expression = bexpr(); //returns type ASTBoolExpression
+    eat(Token::THEN, "Expected 'then'");
+    ans->elseList = stmts(ans->elseList); //returns type ASTStatementList, takes in type ASTStatementList as parameter
+    condt(ans); // returns void, takes ASTIfStatement as parameter
+    eat(Token::END, "Expected 'end'");
+
     return ans;
 }
 
