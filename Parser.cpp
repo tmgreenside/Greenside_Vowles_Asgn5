@@ -301,7 +301,7 @@ std::shared_ptr<ASTListLiteral> Parser::exprlist() {
         case Token::READSTR:
         case Token::LBRACKET:
         case Token::RBRACKET:
-            ans->expressions = expr(); //expression = type ASTExpression // refer to
+            ans->expressions.push_back(expr()); //expression = type ASTExpression
             exprtail(ans); //returns void, takes in ASTExpression
             return ans;
             break;
@@ -331,12 +331,34 @@ std::shared_ptr<ASTIfStatement> Parser::cond() {
     eat(Token::IF, "Expected 'if'");
     ans->baseIf.expression = bexpr(); //returns type ASTBoolExpression
     eat(Token::THEN, "Expected 'then'");
-    ans->elseList = stmts(ans->elseList); //returns type ASTStatementList, takes in type ASTStatementList as parameter
+    ans->baseIf.statementList = stmts(ans->elseList); //returns type ASTStatementList, takes in type ASTStatementList as parameter
     condt(ans); // returns void, takes ASTIfStatement as parameter
     eat(Token::END, "Expected 'end'");
     
     return ans;
 }
+
+//void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
+//    ContextLog clog("condt", currentLexeme);
+//    // TODO
+//
+//    switch (currentLexeme.token) {
+//        case Token::ELSEIF:
+//            eat(Token::ELSEIF, "Expected elseif");
+//            statement->baseIf.expression = bexpr();
+//            eat(Token::THEN, "Expected then");
+//            statement->elseList = stmts(statement->baseIf.statementList); //takes in ASTStamentList, returns ASTStamentList
+//            condt(statement);
+//            break;
+//        case Token::ELSE:
+//            eat(Token::ELSE, "Expected else");
+//            statement->elseList = stmts(statement->baseIf.statementList); //takes in ASTStamentList, returns ASTStamentList
+//            break;
+//        default:
+//            // May be empty
+//            break;
+//    }
+//}
 
 void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
     ContextLog clog("condt", currentLexeme);
@@ -344,16 +366,22 @@ void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
     
     switch (currentLexeme.token) {
         case Token::ELSEIF:
+        {
             eat(Token::ELSEIF, "Expected elseif");
-            statement->baseIf.expression = bexpr();
+            ASTBasicIf nextElseif;
+            nextElseif.expression = bexpr();
             eat(Token::THEN, "Expected then");
-            statement->elseList = stmts(statement->baseIf.statementList); //takes in ASTStamentList, returns ASTStamentList
+            nextElseif.statementList = stmts(statement->baseIf.statementList); // not sure about this line???
+            statement->elseifs.push_back(nextElseif);
             condt(statement);
             break;
+        }
         case Token::ELSE:
+        {
             eat(Token::ELSE, "Expected else");
             statement->elseList = stmts(statement->baseIf.statementList); //takes in ASTStamentList, returns ASTStamentList
             break;
+        }
         default:
             // May be empty
             break;
