@@ -301,7 +301,7 @@ std::shared_ptr<ASTListLiteral> Parser::exprlist() {
         case Token::READSTR:
         case Token::LBRACKET:
         case Token::RBRACKET:
-            ans->expressions = expr(); //expression = type ASTExpression
+            ans->expressions = expr(); //expression = type ASTExpression // refer to
             exprtail(ans); //returns void, takes in ASTExpression
             return ans;
             break;
@@ -318,7 +318,7 @@ void Parser::exprtail(std::shared_ptr<ASTListLiteral> list) {
     // TODO
     if (currentLexeme.token == Token::COMMA) {
         advance();
-        list->expressions = expr();//returns type ASTExpression
+        list->expressions.push_back(expr());//returns type ASTExpression
         exprtail(list); //takes type ASTListLiteral as a parameter
     }
 }
@@ -348,7 +348,7 @@ void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
             statement->baseIf.expression = bexpr();
             eat(Token::THEN, "Expected then");
             statement->elseList = stmts(statement->baseIf.statementList); //takes in ASTStamentList, returns ASTStamentList
-            condt(statement->elseList);
+            condt(statement);
             break;
         case Token::ELSE:
             eat(Token::ELSE, "Expected else");
