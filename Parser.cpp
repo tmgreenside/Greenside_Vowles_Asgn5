@@ -141,9 +141,18 @@ std::shared_ptr<ASTAssignmentStatement> Parser::assign() {
     auto ans = make_shared<ASTAssignmentStatement>();
     // TODO !!!!!!!!!!!!! unfinished
     
-    ans->identifier = value();
+    auto id = make_shared<ASTIdentifier>();
+    if (currentLexeme.token == Token::ID) {
+        // fill in here, see value() ID case
+        id->name = currentLexeme.text;
+        advance();
+        id->indexExpression = listindex();
+    } else {
+        eat(Token::ID, "Expected identifier");
+    }
+    ans->identifier = id;
     eat(Token::ASSIGN, "Expected '='");
-    ans->rhs = listindex();
+    ans->rhs = value();
     eat(Token::SEMICOLON, "Expected ';'");
     
     return ans;
@@ -151,12 +160,12 @@ std::shared_ptr<ASTAssignmentStatement> Parser::assign() {
 
 std::shared_ptr<ASTExpression> Parser::listindex() {
     ContextLog clog("listindex", currentLexeme);
-    // TODO
+    // TODO 
     
     if (currentLexeme.token == Token::LBRACKET) {
-        auto ans = make_shared<ASTExpression>();
+        auto ans = make_shared<ASTListLiteral>();
         advance();
-        ans = expr();
+        ans->expressions.push_back(expr());
         eat(Token::RBRACKET, "Expected ']'");
         return ans;
     }

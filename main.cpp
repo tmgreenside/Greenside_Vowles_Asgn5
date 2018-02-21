@@ -36,5 +36,6 @@ z = [1, 2, 3];
     } catch (MyPLException &e) {
         cout << "Error: " << e.what() << endl;
     }
+    cout << "Program completed" << endl;
     return 0;
 }
