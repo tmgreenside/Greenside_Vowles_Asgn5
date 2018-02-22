@@ -1,3 +1,4 @@
+
 #ifndef ASTPRINTER_H
 #define ASTPRINTER_H
 
@@ -12,47 +13,47 @@
 class ASTPrinter: public Visitor {
 public:
     void visit(ASTSimpleBoolExpression& simpleBoolExpr) override;
-    
+
     void visit(ASTComplexBoolExpression& complexBoolExpr) override;
-    
+
     void visit(ASTStatementList& statementList) override;
-    
+
     void visit(ASTBasicIf& basicIf) override;
-    
+
     void visit(ASTIfStatement& ifStatement) override;
-    
+
     void visit(ASTWhileStatement& whileStatement) override;
-    
+
     void visit(ASTPrintStatement& printStatement) override;
-    
+
     void visit(ASTAssignmentStatement& assignmentStatement) override;
-    
+
     void visit(ASTIdentifier& identifier) override;
-    
+
     void visit(ASTLiteral& literal) override;
-    
+
     void visit(ASTListLiteral& listLiteral) override;
-    
+
     void visit(ASTReadExpression& readExpression) override;
-    
+
     void visit(ASTComplexExpression& complexExpression) override;
 private:
-    
+
     // Increase the indentation level
     void indent();
-    
+
     // Decrease the indentation level
     void dedent();
-    
+
     // Return a string to be used to indent the output
     std::string spacing();
-    
+
     // Base case for the implementation of the println function.  Outputs
     // endl to end the line being output.
     void printlnImpl() {
         std::cout << std::endl;
     }
-    
+
     // Recursive case for the implementation of the println function.  Uses
     // variadic templates to allow anything to be passed in to be output as
     // long as it has an appropriate operator<<.
@@ -61,7 +62,7 @@ private:
         std::cout << std::forward<T>(item);
         printlnImpl(std::forward<Rest>(rest)...);
     }
-    
+
     // Utility function to print out a series of items on a line out output.
     // Output is indented as specified by the current indentation level.  You
     // can pass as many arguments to this function as you want, as long as they
@@ -71,7 +72,7 @@ private:
         std::cout << spacing();
         printlnImpl(std::forward<Rest>(rest)...);
     }
-    
+
     // How many indentation steps to indent the output
     int spaceCount = 0;
 };

@@ -1,3 +1,4 @@
+
 #ifndef VISITOR_H
 #define VISITOR_H
 
@@ -24,31 +25,31 @@ class Visitor {
 public:
     // Virtual destructor because abstract class
     virtual ~Visitor() {}
-    
+
     virtual void visit(ASTSimpleBoolExpression& simpleBoolExpr) = 0;
-    
+
     virtual void visit(ASTComplexBoolExpression& complexBoolExpr) = 0;
-    
+
     virtual void visit(ASTStatementList& statementList) = 0;
-    
+
     virtual void visit(ASTBasicIf& basicIf) = 0;
-    
+
     virtual void visit(ASTIfStatement& ifStatement) = 0;
-    
+
     virtual void visit(ASTWhileStatement& whileStatement) = 0;
-    
+
     virtual void visit(ASTPrintStatement& printStatement) = 0;
-    
+
     virtual void visit(ASTAssignmentStatement& assignmentStatement) = 0;
-    
+
     virtual void visit(ASTIdentifier& identifier) = 0;
-    
+
     virtual void visit(ASTLiteral& literal) = 0;
-    
+
     virtual void visit(ASTListLiteral& listLiteral) = 0;
-    
+
     virtual void visit(ASTReadExpression& readExpression) = 0;
-    
+
     virtual void visit(ASTComplexExpression& complexExpression) = 0;
 };
 

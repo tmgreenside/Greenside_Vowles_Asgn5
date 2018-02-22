@@ -372,6 +372,8 @@ void Parser::exprtail(std::shared_ptr<ASTListLiteral> list) {
 }
 
 
+//cond method
+//eats if, then and end, and manipulates ans of type ASTIfStatement by setting its shared pointers
 std::shared_ptr<ASTIfStatement> Parser::cond() {
     ContextLog clog("cond", currentLexeme);
     auto ans = make_shared<ASTIfStatement>();
@@ -387,6 +389,9 @@ std::shared_ptr<ASTIfStatement> Parser::cond() {
     return ans;
 }
 
+//condt method
+// if next token is ELSEIF, eats ELSEIF,creates and manipulates an ASTBasticIf object and statement
+//if next token is ELSE, eats ELSE and manipulates statement
 
 void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
     ContextLog clog("condt", currentLexeme);
@@ -418,6 +423,12 @@ void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
     }
 }
 
+//bexpr method
+//checks to see if token is NOT, if so, sets negated to false and advances
+//gets the lhs through expr()
+//if next token is EQUAL,LESS_THAN,GREATER_THAN,LESS_THAN_EQUAL,GREATER_THAN_EQUAL,or NOT_EQUAL,
+//calls bexprt and sets and returns ans of type ASTComplexBoolExpression shared pointers, otherwise
+// creates ans of type ASTSimpleBoolExpression and sets its shared pointers and returns.
 std::shared_ptr<ASTBoolExpression> Parser::bexpr() {
 
     ContextLog clog("bexpr", currentLexeme);
@@ -455,6 +466,10 @@ std::shared_ptr<ASTBoolExpression> Parser::bexpr() {
 
 }
 
+//bexprt method
+//if the next token is EQUAL,LESS_THAN,GREATER_THAN,LESS_THAN_EQUAL,GREATER_THAN_EQUAL,or NOT_EQUAL
+//then currentLexeme.token is retrieved and set to expression->relation. expression is of type
+//ASTComplexBoolExpression. Otherwise, error message
 void Parser::bexprt(std::shared_ptr<ASTComplexBoolExpression> expression) {
     ContextLog clog("bexprt", currentLexeme);
     switch (currentLexeme.token) {
@@ -474,6 +489,10 @@ void Parser::bexprt(std::shared_ptr<ASTComplexBoolExpression> expression) {
     bconnect(expression);
 }
 
+//bconnect method
+//if next token is AND, sets hasConjunction as true, eats AND and calls bexpr method.
+//if next token is OR, eats OR and calls bexpr method.
+//otherwise nothing happens because empty
 void Parser::bconnect(std::shared_ptr<ASTComplexBoolExpression> expression) {
     ContextLog clog("bconnect", currentLexeme);
     // TODO !!!!!!!!!!! unfinished
@@ -487,6 +506,9 @@ void Parser::bconnect(std::shared_ptr<ASTComplexBoolExpression> expression) {
     }
 }
 
+//loop method
+//eats WHILE, calls bexpr method, eats DO, calls stmts method and eats END
+//return shared pointer of type ASTWhileStatement
 std::shared_ptr<ASTWhileStatement> Parser::loop() {
     ContextLog clog("loop", currentLexeme);
     auto ans = make_shared<ASTWhileStatement>();
