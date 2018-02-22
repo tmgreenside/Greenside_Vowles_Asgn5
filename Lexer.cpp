@@ -1,3 +1,4 @@
+
 // names: Trevor Greenside, Sammy Vowles
 // date: 30 January 2018
 // course: CPSC 326 - 01
@@ -87,7 +88,14 @@ Lexeme Lexer::next() {
             return Lexeme(Token::LESS_THAN, ">", startLine, startCol);
         }
     }
-
+    else if (tmp >= '0' && tmp <= '9') {
+        string ans;
+        while (peek() >= '0' && peek() <= '9') {
+            ans += peek();
+            read();
+        }
+        return Lexeme(Token::INT, ans, startLine, startCol);
+    }
     // TODO: there are a ton of other cases to consider.
     else if (tmp == '+') {
         return makeSingleCharLexeme(Token::PLUS);
