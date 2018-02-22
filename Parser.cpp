@@ -77,6 +77,9 @@ std::shared_ptr<ASTStatementList> Parser::stmts(std::shared_ptr<ASTStatementList
     }
     return lst;
 }
+
+//calls the output, assignMethod, cond or loop methods if a Token of the
+//corresponding method is called
 std::shared_ptr<ASTStatement> Parser::stmt() {
     ContextLog clog("stmt", currentLexeme);
     switch (currentLexeme.token) {
@@ -98,6 +101,8 @@ std::shared_ptr<ASTStatement> Parser::stmt() {
     }
 }
 
+// Creates an AST Print Statement to link output with
+// the correct print token.
 std::shared_ptr<ASTPrintStatement> Parser::output() {
     ContextLog clog("output", currentLexeme);
     auto ans = std::make_shared<ASTPrintStatement>();
@@ -115,6 +120,8 @@ std::shared_ptr<ASTPrintStatement> Parser::output() {
     return ans;
 }
 
+// Creates an AST Read Expression in memory to handle
+// an input statement in the program to be compiled
 std::shared_ptr<ASTReadExpression> Parser::input() {
     ContextLog clog("input", currentLexeme);
     auto ans = std::make_shared<ASTReadExpression>();
@@ -141,10 +148,13 @@ std::shared_ptr<ASTReadExpression> Parser::input() {
     return ans;
 }
 
+// Handles an assignment statement by creating a AST
+// Identifier and storing the identifier name (LHS) and
+// its value, or whatever is on the RHS.
 std::shared_ptr<ASTAssignmentStatement> Parser::assign() {
     ContextLog clog("assign", currentLexeme);
     auto ans = make_shared<ASTAssignmentStatement>();
-    // TODO !!!!!!!!!!!!! unfinished
+    // TODO
 
     auto id = make_shared<ASTIdentifier>();
     if (currentLexeme.token == Token::ID) {
@@ -163,6 +173,8 @@ std::shared_ptr<ASTAssignmentStatement> Parser::assign() {
     return ans;
 }
 
+// Stores an expression that is found encased in
+// brackets.
 std::shared_ptr<ASTExpression> Parser::listindex() {
     ContextLog clog("listindex", currentLexeme);
     // TODO
@@ -177,6 +189,9 @@ std::shared_ptr<ASTExpression> Parser::listindex() {
     return nullptr;
 }
 
+// for complex expressions, stores the beginning and
+// creates another AST node to handle the remaining part
+// of the expression, handled in exprt().
 std::shared_ptr<ASTExpression> Parser::expr() {
     ContextLog clog("expr", currentLexeme);
     // TODO
@@ -192,6 +207,9 @@ std::shared_ptr<ASTExpression> Parser::expr() {
     return ans->firstOperand;
 }
 
+// calls the mathRel and expr method if the next token is PLUS,MINUS,DIVIDE,
+// MULTIPLY or MODULUS, and adds information to an existing AST Expression.
+// Otherwise does nothing.
 void Parser::exprt(std::shared_ptr<ASTComplexExpression> expression) {
     ContextLog clog("exprt", currentLexeme);
     // TODO
@@ -231,6 +249,8 @@ void Parser::mathRel() {
     }
 }
 
+// Returns true if the token represents a value, or an incoming one.
+// Returns false otherwise.
 bool isTokenAValue(Token token) {
     switch (token) {
         case Token::ID:
@@ -247,6 +267,9 @@ bool isTokenAValue(Token token) {
     }
 }
 
+// calls the advances ID and calls listindex method, advances STRING, advances INT,
+// advances BOOL, calls the input method or advances LBRACKET, then calls the
+// exprlist mehod then eats RBRACKET
 std::shared_ptr<ASTExpression> Parser::value() {
     ContextLog clog("value", currentLexeme);
     switch (currentLexeme.token) {
@@ -308,6 +331,8 @@ std::shared_ptr<ASTExpression> Parser::value() {
     }
 }
 
+// While new expressions exist, adds them to an AST node representing
+// a list.
 std::shared_ptr<ASTListLiteral> Parser::exprlist() {
     ContextLog clog("exprlist", currentLexeme);
     auto ans = make_shared<ASTListLiteral>();
@@ -334,6 +359,8 @@ std::shared_ptr<ASTListLiteral> Parser::exprlist() {
     return ans;
 }
 
+// For comma separated expressions, adds them to the existing
+// AST list literal passed in as an argument.
 void Parser::exprtail(std::shared_ptr<ASTListLiteral> list) {
     ContextLog clog("exprtail", currentLexeme);
     // TODO
@@ -343,6 +370,7 @@ void Parser::exprtail(std::shared_ptr<ASTListLiteral> list) {
         exprtail(list); //takes type ASTListLiteral as a parameter
     }
 }
+
 
 std::shared_ptr<ASTIfStatement> Parser::cond() {
     ContextLog clog("cond", currentLexeme);
