@@ -434,59 +434,34 @@ std::shared_ptr<ASTBoolExpression> Parser::bexpr() {
 std::shared_ptr<ASTBoolExpression> Parser::bexpr() {
 
     ContextLog clog("bexpr", currentLexeme);
-
     bool negated = false;
-
     if (currentLexeme.token == Token::NOT) {
-
         advance();
-
         negated = true;
-
     }
 
     auto lhs = expr();
 
     switch (currentLexeme.token) {
-
         case Token::EQUAL:
-
         case Token::LESS_THAN:
-
         case Token::GREATER_THAN:
-
         case Token::LESS_THAN_EQUAL:
-
         case Token::GREATER_THAN_EQUAL:
-
         case Token::NOT_EQUAL: {
-
             auto ans = make_shared<ASTComplexBoolExpression>();
-
             ans->negated = negated;
-
             ans->first = lhs;
-
             bexprt(ans);
-
             return ans;
-
             break;
-
         }
-
         default: {
-
             auto ans = make_shared<ASTSimpleBoolExpression>();
-
             ans->negated = negated;
-
             ans->expression = lhs;
-
             return ans;
-
             break;
-
         }
 
     }
