@@ -1,3 +1,8 @@
+//Sammy Vowles and Trevor Greenside
+//February 22, 2018
+//CPSC 326
+//Assignment 5
+
 #include "Parser.h"
 
 #include <iostream>
@@ -5,7 +10,7 @@
 
 using namespace std;
 
-const bool USE_CONTEXTLOG = true;
+const bool USE_CONTEXTLOG = false;
 
 class ContextLog {
 public:
@@ -354,27 +359,6 @@ std::shared_ptr<ASTIfStatement> Parser::cond() {
     return ans;
 }
 
-//void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
-//    ContextLog clog("condt", currentLexeme);
-//    // TODO
-//
-//    switch (currentLexeme.token) {
-//        case Token::ELSEIF:
-//            eat(Token::ELSEIF, "Expected elseif");
-//            statement->baseIf.expression = bexpr();
-//            eat(Token::THEN, "Expected then");
-//            statement->elseList = stmts(statement->baseIf.statementList); //takes in ASTStamentList, returns ASTStamentList
-//            condt(statement);
-//            break;
-//        case Token::ELSE:
-//            eat(Token::ELSE, "Expected else");
-//            statement->elseList = stmts(statement->baseIf.statementList); //takes in ASTStamentList, returns ASTStamentList
-//            break;
-//        default:
-//            // May be empty
-//            break;
-//    }
-//}
 
 void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
     ContextLog clog("condt", currentLexeme);
@@ -387,7 +371,8 @@ void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
             ASTBasicIf nextElseif;
             nextElseif.expression = bexpr();
             eat(Token::THEN, "Expected then");
-            nextElseif.statementList = stmts(statement->baseIf.statementList); // not sure about this line???
+            //nextElseif.statementList = stmts(statement->baseIf.statementList); // not sure about this line???
+            nextElseif.statementList = stmts();
             statement->elseifs.push_back(nextElseif);
             condt(statement);
             break;
@@ -395,7 +380,8 @@ void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
         case Token::ELSE:
         {
             eat(Token::ELSE, "Expected else");
-            statement->elseList = stmts(statement->baseIf.statementList); //takes in ASTStamentList, returns ASTStamentList
+            //statement->elseList = stmts(statement->baseIf.statementList); //takes in ASTStamentList, returns ASTStamentList
+            statement->elseList = stmts();
             break;
         }
         default:
@@ -403,34 +389,7 @@ void Parser::condt(std::shared_ptr<ASTIfStatement> statement) {
             break;
     }
 }
-/*
-std::shared_ptr<ASTBoolExpression> Parser::bexpr() {
-    ContextLog clog("bexpr", currentLexeme);
-    // TODO
-    auto ans = make_shared<ASTComplexBoolExpression>();
 
-    switch (currentLexeme.token) {
-        case Token::NOT:
-            eat(Token::NOT, "Expected 'not'");
-        case Token::ID:                            //******************* Added to
-        case Token::STRING:
-        case Token::INT:
-        case Token::BOOL:
-        case Token::READINT:
-        case Token::READSTR:
-        case Token::LBRACKET:
-        case Token::RBRACKET:
-            ans->first = expr();// returns ASTExpression
-            bexprt(ans);//takes in ASTComplexBoolExpression as param
-            break;
-        default:
-            // May be empty
-            break;
-    }
-
-    return nullptr;
-}
-*/
 std::shared_ptr<ASTBoolExpression> Parser::bexpr() {
 
     ContextLog clog("bexpr", currentLexeme);
